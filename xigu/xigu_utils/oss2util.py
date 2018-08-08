@@ -5,7 +5,7 @@ import os
 import sys
 
 
-from utils import logger, clientId, clientSecret
+from xigu_utils.utils import logger, clientId, clientSecret
 
 auth = oss2.Auth(clientId, clientSecret)
 endpoint_cn = 'oss-cn-shanghai.aliyuncs.com'

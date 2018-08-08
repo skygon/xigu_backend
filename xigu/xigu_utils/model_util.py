@@ -6,7 +6,7 @@ from django.conf import settings
 from ckeditor_uploader.fields import RichTextUploadingField
 from DjangoUeditor.models import UEditorField
 import os
-import utils, oss2util
+from xigu_utils import utils, oss2util
 
 # 上传文件处理
 @deconstructible

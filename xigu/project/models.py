@@ -34,11 +34,11 @@ class Project(models.Model):
     SHOW = ((0, '否'),(1, '是'))
 
     project_name = models.CharField(max_length=128, verbose_name="产品名称")
-    project_type = models.IntegerField(choise=TYPE, verbose_name="产品类型")
+    project_type = models.IntegerField(choices=TYPE, verbose_name="产品类型")
     estimate_yearly_return = models.CharField(max_length=32, verbose_name="预计年化收益率")
     history_yearly_return = models.CharField(max_length=32, verbose_name="历史平均年化收益率", null=True, blank=True)
 
-    project_status = models.IntegerField(default=1, choise=STATUS, verbose_name="产品状态")
+    project_status = models.IntegerField(default=1, choices=STATUS, verbose_name="产品状态")
     # 基金类产品字段
     min_amount = models.CharField(max_length=32, verbose_name="起投金额", null=True, blank=True)
     step_amount = models.CharField(max_length=32, verbose_name="递增金额", null=True, blank=True)
