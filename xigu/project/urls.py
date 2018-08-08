@@ -6,6 +6,7 @@ from . import response
 # info/<int:projectId>/?phone=1234567
 urlpatterns = [
     path('list', response.get_list),
+    path('detail', response.get_detail),
     #path('project/<int:projectId>/', response.get_basic_info),
     #path('project-detail/<int:projectId>/', response.get_detail_info),
     #path('videos', response.get_video_list),

@@ -31,12 +31,14 @@ ALLOWED_HOSTS = ['localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'DjangoUeditor',
 # user defined apps
     'project.apps.ProjectConfig',
 ]
@@ -127,10 +129,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/' 
-#STATIC_ROOT = os.path.join(BASE_DIR,'static')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'static'),
-    ]
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR,'static'),
+#    ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/upload/'
@@ -164,4 +166,39 @@ LOGGING = {
             'propagate': True
         },
     },
+}
+
+# django suit settings
+# Django Suit configuration example
+SUIT_CONFIG = {
+    # header
+    'ADMIN_NAME': 'XIGUGLOBAL',
+    # 'HEADER_DATE_FORMAT': 'l, j. F Y',
+    # 'HEADER_TIME_FORMAT': 'H:i',
+
+    # forms
+    'SHOW_REQUIRED_ASTERISK': True,  # Default True
+    # 'CONFIRM_UNSAVED_CHANGES': True, # Default True
+
+    # menu
+    # 'SEARCH_URL': '/admin/auth/user/',
+    # 'MENU_ICONS': {
+    #    'sites': 'icon-leaf',
+    #    'auth': 'icon-lock',
+    # },
+    # 'MENU_OPEN_FIRST_CHILD': True, # Default True
+    # 'MENU_EXCLUDE': ('auth.group',),
+    'MENU': (
+        'sites',
+        {'app': 'project', 'label': '产品信息管理', 'icon':'icon-cog',
+         'models': (
+             {'model': 'projectry.Project', 'label': '产品'}, 
+             )
+        },
+    #     {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
+    #     {'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
+    ),
+
+    # misc
+    # 'LIST_PER_PAGE': 15
 }
