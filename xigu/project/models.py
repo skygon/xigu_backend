@@ -35,6 +35,7 @@ class Project(models.Model):
 
     project_name = models.CharField(max_length=128, verbose_name="产品名称")
     project_type = models.IntegerField(choices=TYPE, verbose_name="产品类型")
+    tags = models.CharField(max_length=128, verbose_name="产品标签", help_text="输入产品标签，以‘#’ 号分隔")
     estimate_yearly_return = models.CharField(max_length=32, verbose_name="预计年化收益率")
     history_yearly_return = models.CharField(max_length=32, verbose_name="历史平均年化收益率", null=True, blank=True)
 

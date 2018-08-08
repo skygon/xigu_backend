@@ -16,7 +16,8 @@ def get_list(request):
             page_id = 1
 
         all_data = []
-        
+        total_count = Project.objects.count()
+
         start = (int(page_id) - 1) * page_size
         end = start + page_size
         #projects = Project.objects.all()[start:end]
@@ -27,9 +28,11 @@ def get_list(request):
             data['project_id'] = p.id
             data['project_name'] = p.project_name
             data['project_type'] = p.project_type
+            data['tags'] = p.tags
 
             data['project_status'] = p.project_status
-            data['estimated_yearly_return'] = p.estimated_yearly_return
+            data['estimate_yearly_return'] = p.estimate_yearly_return
+            
             data['history_yearly_return'] = p.history_yearly_return
 
             # 基金类数据
@@ -46,8 +49,8 @@ def get_list(request):
             if data['is_show'] == 1:
                 # already ordered by is_top value
                 all_data.append(data)
-        
-        return utils.return_success(all_data)
+
+        return utils.return_success(all_data, total_count)
     except Exception as e:
         utils.logger.debug('get project list fail: %s', str(e))
         return utils.return_error(400)
@@ -56,9 +59,15 @@ def get_detail(request):
     try:
         project_id = request.GET.get('id')
         p = Project.objects.get(id=project_id)
-        data = {}
-        data['project_detail'] = p.project_detail
-        return utils.return_success(data)
+        response = HttpResponse()
+   
+        desc = p.project_detail.content
+       
+        new_content = desc.replace("src=\"/upload/upload/", "src=\"http://img.fang88.com/ng_server_upload/")
+        
+        response.write(new_content)
+        return response
+
     except Exception as e:
         utils.logger.debug('get project detail fail: %s', str(e))
         return utils.return_error(400)

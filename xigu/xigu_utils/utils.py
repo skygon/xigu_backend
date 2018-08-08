@@ -101,10 +101,12 @@ def return_error(err_code):
     data['status'] = err_code
     return JsonResponse(data, safe=False)
 
-def return_success(data):
+def return_success(data, count=None):
     res = {}
     res['status'] = 200
     res['data'] = data
+    if count is not None:
+        res['total_count'] = count
     return JsonResponse(res, safe=False)
 
 
