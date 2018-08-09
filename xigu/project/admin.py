@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Project
-from .models import ProjectDescription
-from .models import Image
+from .models import Project, ProjectDescription, Image, Fund, Insurance, RealEstate, CommercialEstate
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 import os
@@ -22,13 +20,30 @@ class ImageAdmin(admin.ModelAdmin):
   
 #admin.site.register(Image, ImageAdmin)
 
+class FundAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'seven_day_return', 'estimate_yearly_return', 'min_amount', 'step_amount', 'invest_range')
+
+class InsuranceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'estimate_yearly_return', 'min_amount', 'invest_range')
+
+class RealEstateAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'estimate_yearly_return', 'property_type', 'bedrooms', 'sqft')
+
+class CommercialEstateAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'estimate_yearly_return', 'total_price', 'min_amount', 'invest_range')
+
+
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'project_name', 'project_type', 'estimate_yearly_return', 'history_yearly_return', 'project_status', 'min_amount', 'step_amount', 'invest_range', 'is_show', 'is_top')
+    list_display = ('id', 'project_name', 'project_type', 'project_status', 'fund', 'insurance', 'real_estate', 'commercial_estate', 'project_detail', 'is_show', 'is_top')
 
     #filter_horizontal = ('detail_photos', 'layout_photos', )
 
 
 #admin.site.register(Project)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(Fund, FundAdmin)
+admin.site.register(Insurance, InsuranceAdmin)
+admin.site.register(RealEstate, RealEstateAdmin)
+admin.site.register(CommercialEstate, CommercialEstateAdmin)
 admin.site.register(ProjectDescription)
 admin.site.register(Image, ImageAdmin)

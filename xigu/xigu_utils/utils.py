@@ -34,6 +34,12 @@ CREATE TABLE `project_visit` (
 clientId = 'HfUcPucMgQEWgNXI'
 clientSecret = 'mz99jike788kX4tkB8C5Pb5cGepR3j'
 
+# project types
+FUND = 1
+REAL_ESTATE = 2
+COMMERCIAL_ESTATE = 3
+INSURANCE = 4
+
 # file name to md5 file name
 original_name = {}
 

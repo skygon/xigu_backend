@@ -28,20 +28,28 @@ def get_list(request):
             data['project_id'] = p.id
             data['project_name'] = p.project_name
             data['project_type'] = p.project_type
+            data['project_status'] = p.project_status
             data['tags'] = p.tags
 
-            data['project_status'] = p.project_status
-            data['estimate_yearly_return'] = p.estimate_yearly_return
-            
-            data['history_yearly_return'] = p.history_yearly_return
-
             # 基金类数据
-            data['fund'] = {}
-            data['fund']['min_amount'] = p.min_amount
-            data['fund']['step_amount'] = p.step_amount
-            data['fund']['invest_range'] = p.invest_range
-
-            #data['project_detail'] = p.project_detail
+            if p.fund is not None:
+                data['project_type'] = utils.FUND
+                data['fund'] = {}
+                
+                data['fund']['seven_day_return'] = p.fund.seven_day_return
+                data['fund']['estimate_yearly_return'] = p.fund.estimate_yearly_return
+                data['fund']['history_yearly_return'] = p.fund.history_yearly_return
+                
+                data['fund']['min_amount'] = p.fund.min_amount
+                data['fund']['step_amount'] = p.fund.step_amount
+                data['fund']['invest_range'] = p.fund.invest_range
+            elif p.insurance is not None:
+                data['project_type'] = utils.INSURANCE
+                data['insurance'] = {}
+                data['insurance']['estimate_yearly_return'] = p.insurance.estimate_yearly_return
+                
+                data['insurance']['min_amount'] = p.insurance.min_amount
+                data['insurance']['invest_range'] = p.insurance.invest_range
 
 
             data['is_show'] = p.is_show
@@ -62,7 +70,6 @@ def get_detail(request):
         response = HttpResponse()
    
         desc = p.project_detail.content
-       
         new_content = desc.replace("src=\"/upload/upload/", "src=\"http://img.fang88.com/ng_server_upload/")
         
         response.write(new_content)
