@@ -32,11 +32,12 @@ class Insurance(models.Model):
     estimate_yearly_return = models.CharField(max_length=32, verbose_name="预计年化收益率")
     min_amount = models.CharField(max_length=32, verbose_name="起投金额", null=True, blank=True)
     invest_range = models.CharField(max_length=64, verbose_name="缴费期限", null=True, blank=True)
+    age_range = models.CharField(max_length=64, verbose_name="投保年龄")
 
 
     class Meta:
         db_table = "insurance"
-        verbose_name = '基金类产品'
+        verbose_name = '保险类产品'
 
     def __str__(self):
         return self.name

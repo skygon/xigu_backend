@@ -50,6 +50,23 @@ def get_list(request):
                 
                 data['insurance']['min_amount'] = p.insurance.min_amount
                 data['insurance']['invest_range'] = p.insurance.invest_range
+                data['insurance']['age_range'] = p.insurance.age_range
+            elif p.real_estate is not None:
+                data['project_type'] = utils.REAL_ESTATE
+                data['real_estate'] = {}
+                data['real_estate']['estimate_yearly_return'] = p.real_estate.estimate_yearly_return
+                
+                data['real_estate']['property_type'] = p.real_estate.property_type
+                data['real_estate']['bedrooms'] = p.real_estate.bedrooms
+                data['real_estate']['sqft'] = p.real_estate.sqft
+            elif p.commercial_estate is not None:
+                data['project_type'] = utils.COMMERCIAL_ESTATE
+                data['commercial_estate'] = {}
+                data['commercial_estate']['estimate_yearly_return'] = p.commercial_estate.estimate_yearly_return
+                
+                data['commercial_estate']['total_price'] = p.commercial_estate.total_price
+                data['commercial_estate']['min_amount'] = p.commercial_estate.min_amount
+                data['commercial_estate']['invest_range'] = p.commercial_estate.invest_range
 
 
             data['is_show'] = p.is_show

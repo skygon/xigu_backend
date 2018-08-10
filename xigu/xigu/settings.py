@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'DjangoUeditor',
 # user defined apps
     'project.apps.ProjectConfig',
+    'user_manage.apps.UserManageConfig'
 ]
 
 MIDDLEWARE = [
@@ -193,6 +194,11 @@ SUIT_CONFIG = {
         {'app': 'project', 'label': '产品信息管理', 'icon':'icon-cog',
          'models': (
              {'model': 'projectry.Project', 'label': '产品'}, 
+             )
+        },
+        {'app': 'user_manage', 'label': '用户管理', 'icon':'icon-cog',
+         'models': (
+             {'model': 'user_manage.User', 'label': '用户'}, 
              )
         },
     #     {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
