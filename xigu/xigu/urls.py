@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('project/', include('project.urls')),
     path('userinfo/', include('user_manage.urls')),
+    path('grock/', include('grock.urls')),
     url(r'^ueditor/',include('DjangoUeditor.urls' )),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
