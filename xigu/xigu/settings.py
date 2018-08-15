@@ -25,7 +25,7 @@ SECRET_KEY = '5-h1!l8u3lbb=520#7)5%gjqo2n1q7y@qr)#qwp@p7rq93z_p)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '192.168.0.106']
+ALLOWED_HOSTS = ['localhost', '192.168.0.106', 'api2-xigu.fang88.com']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'DjangoUeditor',
+    'corsheaders',
 # user defined apps
     'project.apps.ProjectConfig',
     'user_manage.apps.UserManageConfig'
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,11 +85,11 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'xigu_backend',   #Name of the DB I have my data in
-        'USER': 'root',
-        'PASSWORD': 'root',
-        #'PASSWORD': 'fanG882015chinauS',  #Changed for this post
-        #'HOST': 'rds2m2565y0o4owc90g8.mysql.rds.aliyuncs.com',
+        'NAME': 'inner_test_db',   #Name of the DB I have my data in
+        'USER': 'root88',
+        #'PASSWORD': 'root',
+        'PASSWORD': 'fanG882015chinauS',  #Changed for this post
+        'HOST': 'rds2m2565y0o4owc90g8.mysql.rds.aliyuncs.com',
         'PORT': '3306',
     }
 }
@@ -128,6 +130,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+CORS_ORIGIN_ALLOW_ALL = True
 
 STATIC_URL = '/static/' 
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
@@ -147,12 +150,12 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/home/ubuntu/workspace/skygon/xigu/log/info/info.log',
+            'filename': '/home/ubuntu/workspace/skygon/log/xigu/info/info.log',
         },
         'error': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/home/ubuntu/workspace/skygon/xigu/log/error/error.log',
+            'filename': '/home/ubuntu/workspace/skygon/log/xigu/error/error.log',
         },
     },
     'loggers': {
