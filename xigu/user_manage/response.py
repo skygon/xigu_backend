@@ -10,6 +10,8 @@ from .models import User
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 from xigu_utils import utils, smsutil
+from project.models import Project
+from project.response import collect_project_info
 
 # An in-memory dict used to stored phone number mapped to current verify code
 phone_verify_code = {}
@@ -116,27 +118,23 @@ def unfollow(request):
         return return_error(400)
 
 # get user info api
-# userinfo/projects/<phoneNumber>?page=1
-def get_user_info(request, phoneNumber):
+# userinfo/like
+def get_user_info(request):
     try:
-        utils.logger.debug('user[%s] request projects info', phoneNumber)
-        uobj = User.objects.get(phone_number=phoneNumber)
+        page_id = request.POST.get('page')
+        phone_num = request.POST.get('mobile')
+        utils.logger.debug('user[%s] request projects info', phone_num)
+        uobj = User.objects.get(mobile=phone_num)
         #followed_projects = uobj.follow_projects.all()
         
         # 10 projects for one page
         page_size = 10
-        page_id = request.POST.get('page')
+        
         if page_id is None or int(page_id) < 0:
             page_id = 1
 
         full_info = {}
-        cs = get_custom_service(uobj)
-        # retrieve custom service information
-        full_info['customer_service'] = {}
-        full_info['customer_service']['nick_name'] = cs.nick_name
-        full_info['customer_service']['wechat_id'] = cs.wechat_id
-        full_info['customer_service']['photo'] = cs.photo
-        
+
         # get followed projects
         projects_data = []
         
@@ -151,20 +149,19 @@ def get_user_info(request, phoneNumber):
         cursor.execute(sql, [uobj.id, start, page_size])
 
         res = cursor.fetchone()
-        utils.logger.debug('fetch one result %s', res)
+        utils.logger.debug('fetch user follow projects result %s', res)
         while res is not None:
             pid = res[0]
             p = Project.objects.get(id=pid)
-            data = {}
+            
+            data = collect_project_info(p)
             
             data['follow'] = 1
             
             projects_data.append(data)
             res = cursor.fetchone()
         
-
         full_info['projects'] = projects_data
-        full_info['courses'] = get_follow_course_impl(page_id, phoneNumber)
         return return_success(full_info)
     except Exception as e:
         utils.logger.debug('get user info fail: %s', str(e))

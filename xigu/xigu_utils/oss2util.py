@@ -29,6 +29,19 @@ def uploadContent(fd, target):
     ret = bucket_cn.put_object(target, fd.open(), headers) and bucket_us.put_object(target, fd.open(), headers)
     return ret.status == 200
 
+def uploadFileCN(full_file_path, target_file_name):
+    headers = {'Cache-Control': 'public,max-age=2592000'}
+    try:
+        #with open ('/home/skygon/Downloads/a251c2f11e0ee85260577a2ede685e18.jpg', 'rb') as fobject:
+        ret_cn = ""
+        with open (full_file_path, 'rb') as fobject:
+            ret_cn = bucket_cn.put_object(target_file_name, fobject, headers)
+            logger.debug('upload file[%s] to cn-oss as %s', full_file_path, target_file_name)
+        
+        return ret_cn.status == 200
+    except Exception as e:
+        return False
+
 def uploadFile(full_file_path, target_file_name):
     headers = {'Cache-Control': 'public,max-age=2592000'}
     try:
