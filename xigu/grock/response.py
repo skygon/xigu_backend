@@ -20,6 +20,19 @@ def send_proposal(request):
         utils.logger.debug('send proposal fail: %s', str(e))
         return utils.return_error(400)
 
+def send_email(data):
+    try:
+        message = '所属行业： ' + data['field'] + '\n'
+        message += '融资情况： ' + data['invest'] + '\n'
+        message += '公司注册情况： ' + data['register'] + '\n'
+        message += '所需工位数量： ' + data['cubes'] + '\n'
+        message += '联系电话： ' + data['mobile'] + '\n'
+        message += 'BP链接： ' + data['oss_url'] + '\n' 
+        send_mail('入驻申请', message, 'cuiyun@fang88.me', ['cuiyun@fang88.me'], fail_silently=False)
+        return utils.return_success({})
+    except Exception as e:
+        utils.logger.debug('send email fail: %s', str(e))
+        return utils.return_error(400)
 
 def receive_proposal(request):
     try:
@@ -47,14 +60,15 @@ def receive_proposal(request):
         utils.logger.debug('file saved to path: %s', path)
 
         # upload to oss cn
-        target = 'grock_upload/' + oss2util.md5(path) + bp_name.split('.')[-1]
+        target = 'grock_upload/' + oss2util.md5(path) + '.' + bp_name.split('.')[-1]
         oss2util.uploadFileCN(path, target)
 
         # send email
         oss_url = 'http://img.fang88.com/' + target
+        data['oss_url'] = oss_url
 
-
-        return utils.return_success({})
+        return send_email(data)
+        #return utils.return_success({})
     except Exception as e:
         utils.logger.debug('receive proposal fail: %s', str(e))
         return utils.return_error(400)
