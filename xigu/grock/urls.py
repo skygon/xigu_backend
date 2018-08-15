@@ -6,4 +6,5 @@ from . import response, views
 # checkcode (POST params: {'code': xxx, 'mobile': xxx})
 urlpatterns = [
     path('proposal', response.send_proposal),
+    path('submitproposal', response.receive_proposal),
 ]

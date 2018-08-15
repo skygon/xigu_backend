@@ -1,10 +1,15 @@
 from django.core.mail import send_mail
 import os
 import sys
+import json
+import time
+from django.conf import settings
+from django.core.files.storage import Storage, default_storage
+from django.core.files.base import ContentFile
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-from xigu_utils import utils
+from xigu_utils import utils, oss2util
 
 def send_proposal(request):
     try:
@@ -13,4 +18,43 @@ def send_proposal(request):
         return utils.return_success({})
     except Exception as e:
         utils.logger.debug('send proposal fail: %s', str(e))
+        return utils.return_error(400)
+
+
+def receive_proposal(request):
+    try:
+        utils.logger.debug('request is : %s', request.POST.get('data'))
+        utils.logger.debug('request files is : %s', request.FILES)
+        request_data = json.loads(request.POST.get('data'))
+        utils.logger.debug('jsonfy request data is %s', request_data)
+        
+        data = {}
+        data['field'] = request_data['field']
+        data['invest'] = request_data['invest']
+        data['register'] = request_data['register']
+        data['cubes'] = request_data['cubes']
+        data['mobile'] = request_data['mobile']
+        bp_name = request_data['bp_name']
+        utils.logger.debug('receive data is: %s', data)
+        #bp_content = request.POST.get('bp_content')
+
+        bp_content = request.FILES.get('files')
+        utils.logger.debug('bp content is %s', bp_content)
+
+        save_path = os.path.join(settings.MEDIA_ROOT, 'upload', bp_name)
+        path = default_storage.save(save_path, ContentFile(bp_content.read()))
+
+        utils.logger.debug('file saved to path: %s', path)
+
+        # upload to oss cn
+        target = 'grock_upload/' + oss2util.md5(path) + bp_name.split('.')[-1]
+        oss2util.uploadFileCN(path, target)
+
+        # send email
+        oss_url = 'http://img.fang88.com/' + target
+
+
+        return utils.return_success({})
+    except Exception as e:
+        utils.logger.debug('receive proposal fail: %s', str(e))
         return utils.return_error(400)
