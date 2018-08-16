@@ -33,6 +33,8 @@ def send(type, phone_num):
 
 def send_verify_code(request):
     try:
+        #utils.logger.debug('get code requet: %s', request)
+        #utils.logger.debug('get code get requet: %s', request.GET)
         phoneNumber = request.GET.get('mobile')
         # check phone, cn or us
         type = 'cn'
@@ -59,9 +61,13 @@ def send_verify_code(request):
 
 def check_verify_code(request):
     try:
+        #utils.logger.debug('check verification body %s', request)
+        utils.logger.debug('check verification body: %s', request.body)
         utils.logger.debug('check verification post body: %s', request.POST)
-        phone_num = request.POST.get('mobile')
-        recv_code = request.POST.get('code')
+        
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        recv_code = post_data['code']
         send_code = phone_verify_code.get(phone_num)
 
         utils.logger.debug('phone number: %s, code: %s', phone_num, recv_code)
@@ -85,9 +91,13 @@ def check_verify_code(request):
 
 def follow(request):
     try:
-        phone_num = request.POST.get('mobile')
-        pid = request.POST.get('project_id')
+        #phone_num = request.POST.get('mobile')
+        #pid = request.POST.get('project_id')
 
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        pid = post_data['project_id']
+        
         utils.logger.debug('user[%s] follows project[id: %s]', phone_num, pid)
         uobj = User.objects.get(mobile=phone_num)
         pobj = Project.objects.get(id=pid)
@@ -102,8 +112,11 @@ def follow(request):
 
 def unfollow(request):
     try:
-        phone_num = request.POST.get('mobile')
-        pid = request.POST.get('project_id')
+        #phone_num = request.POST.get('mobile')
+        #pid = request.POST.get('project_id')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        pid = post_data['project_id']
 
         utils.logger.debug('user[%s] unfollows project[id: %s]', phone_num, pid)
         uobj = User.objects.get(mobile=phone_num)
@@ -121,8 +134,12 @@ def unfollow(request):
 # userinfo/projects
 def get_user_projects_info(request):
     try:
-        page_id = request.POST.get('page')
-        phone_num = request.POST.get('mobile')
+        #page_id = request.POST.get('page')
+        #phone_num = request.POST.get('mobile')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        page_id = post_data['page']
+
         utils.logger.debug('user[%s] request projects info', phone_num)
         uobj = User.objects.get(mobile=phone_num)
         #followed_projects = uobj.follow_projects.all()
@@ -171,8 +188,12 @@ def get_user_projects_info(request):
 
 def get_user_investments_info(request):
     try:
-        page_id = request.POST.get('page')
-        phone_num = request.POST.get('mobile')
+        #page_id = request.POST.get('page')
+        #phone_num = request.POST.get('mobile')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        page_id = post_data['page']
+
         utils.logger.debug('user[%s] request projects info', phone_num)
         uobj = User.objects.get(mobile=phone_num)
         
