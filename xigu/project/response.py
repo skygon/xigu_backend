@@ -57,6 +57,27 @@ def collect_project_info(p):
     data['is_show'] = p.is_show
     return data
 
+def get_yearly_return(project):
+    try:
+        data = {}
+        if p.fund is not None:
+            data['project_type'] = utils.FUND
+            data['yearly_return'] = p.fund.estimate_yearly_return
+        elif p.insurance is not None:
+            data['project_type'] = utils.INSURANCE
+            data['yearly_return'] = p.insurance.estimate_yearly_return
+        elif p.real_estate is not None:
+            data['project_type'] = utils.REAL_ESTATE
+            data['yearly_return'] = p.real_estate.estimate_yearly_return
+        elif p.commercial_estate is not None:
+            data['project_type'] = utils.COMMERCIAL_ESTATE
+            data['yearly_return'] = p.commercial_estate.estimate_yearly_return
+        
+        return data
+    except Exception as e:
+        utils.logger.debug('get yearly return fail %s', str(e))
+        raise
+
 def get_list(request):
     try:
         page_size = 10
