@@ -57,7 +57,7 @@ def collect_project_info(p):
     data['is_show'] = p.is_show
     return data
 
-def get_yearly_return(project):
+def get_yearly_return(p):
     try:
         data = {}
         if p.fund is not None:

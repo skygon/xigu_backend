@@ -220,6 +220,7 @@ def get_user_investments_info(request):
             data['estimate_yearly_return'] = get_yearly_return(invest.project)['yearly_return']
             data['principal'] = invest.principal
             data['interest'] = invest.interest
+            data['unit'] = invest.unit
             invests_data.append(data)
         
         full_info['investments'] = invests_data
