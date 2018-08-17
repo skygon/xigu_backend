@@ -6,12 +6,13 @@ import json
 import uuid
 import hashlib
 import random
+from django.db import connection
 from .models import User
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 from xigu_utils import utils, smsutil
 from project.models import Project
-from project.response import collect_project_info
+from project.response import collect_project_info, get_yearly_return
 
 # An in-memory dict used to stored phone number mapped to current verify code
 phone_verify_code = {}
@@ -46,7 +47,7 @@ def send_verify_code(request):
         
         utils.logger.debug('type is %s', type)
         if type == 'unknown':
-            return return_error(400)
+            return utils.return_error(400)
         # send msg
         send(type, phoneNumber)
 
@@ -59,11 +60,17 @@ def send_verify_code(request):
 
 def check_verify_code(request):
     try:
+        #utils.logger.debug('check verification body %s', request)
+        utils.logger.debug('check verification body: %s', request.body)
         utils.logger.debug('check verification post body: %s', request.POST)
-        phone_num = request.POST.get('mobile')
-        recv_code = request.POST.get('code')
+        
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        recv_code = post_data['code']
         send_code = phone_verify_code.get(phone_num)
 
+        data = {}
+        data['has_investment'] = 0
         utils.logger.debug('phone number: %s, code: %s', phone_num, recv_code)
         if send_code is not None and send_code == int(recv_code):
             if User.objects.filter(mobile=phone_num).exists() is False:
@@ -74,10 +81,12 @@ def check_verify_code(request):
             else:
                 uobj = User.objects.get(mobile=phone_num)
                 uobj.save() # just for update active time
-            
-            return return_success({})
+                if uobj.investment_set.count() > 0:
+                    data['has_investment'] = 1
+
+            return utils.return_success(data)
         else:
-           return return_error(403)
+           return utils.return_error(403)
             #return HttpResponse(403)
     except Exception as e:
         utils.logger.debug('check verification fail: %s', str(e))
@@ -85,9 +94,13 @@ def check_verify_code(request):
 
 def follow(request):
     try:
-        phone_num = request.POST.get('mobile')
-        pid = request.POST.get('project_id')
+        #phone_num = request.POST.get('mobile')
+        #pid = request.POST.get('project_id')
 
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        pid = post_data['project_id']
+        
         utils.logger.debug('user[%s] follows project[id: %s]', phone_num, pid)
         uobj = User.objects.get(mobile=phone_num)
         pobj = Project.objects.get(id=pid)
@@ -95,15 +108,18 @@ def follow(request):
         # add relation ship
         uobj.follow_projects.add(pobj)
 
-        return return_success({})
+        return utils.return_success({})
     except Exception as e:
         utils.logger.debug('follow fail: %s', str(e))
-        return return_error(400)
+        return utils.return_error(400)
 
 def unfollow(request):
     try:
-        phone_num = request.POST.get('mobile')
-        pid = request.POST.get('project_id')
+        #phone_num = request.POST.get('mobile')
+        #pid = request.POST.get('project_id')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        pid = post_data['project_id']
 
         utils.logger.debug('user[%s] unfollows project[id: %s]', phone_num, pid)
         uobj = User.objects.get(mobile=phone_num)
@@ -112,21 +128,26 @@ def unfollow(request):
         # add relation ship
         uobj.follow_projects.remove(pobj)
 
-        return return_success({})
+        return utils.return_success({})
     except Exception as e:
         utils.logger.debug('unfollow fail: %s', str(e))
-        return return_error(400)
+        return utils.return_error(400)
 
 # get user info api
-# userinfo/like
-def get_user_info(request):
+# userinfo/projects
+def get_user_projects_info(request):
     try:
-        page_id = request.POST.get('page')
-        phone_num = request.POST.get('mobile')
+        #page_id = request.POST.get('page')
+        #phone_num = request.POST.get('mobile')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        page_id = post_data['page']
+
         utils.logger.debug('user[%s] request projects info', phone_num)
         uobj = User.objects.get(mobile=phone_num)
         #followed_projects = uobj.follow_projects.all()
         
+        total_count = uobj.follow_projects.count()
         # 10 projects for one page
         page_size = 10
         
@@ -162,7 +183,47 @@ def get_user_info(request):
             res = cursor.fetchone()
         
         full_info['projects'] = projects_data
-        return return_success(full_info)
+        return utils.return_success(full_info, total_count)
     except Exception as e:
-        utils.logger.debug('get user info fail: %s', str(e))
-        return return_error(400)
+        utils.logger.debug('get user projects info fail: %s', str(e))
+        return utils.return_error(400)
+
+
+def get_user_investments_info(request):
+    try:
+        #page_id = request.POST.get('page')
+        #phone_num = request.POST.get('mobile')
+        post_data = json.loads(request.body.decode('utf-8'))
+        phone_num = post_data['mobile']
+        page_id = post_data['page']
+
+        utils.logger.debug('user[%s] request projects info', phone_num)
+        uobj = User.objects.get(mobile=phone_num)
+        
+        total_count = uobj.investment_set.count()
+        
+        # 10 projects for one page
+        page_size = 10
+        
+        if page_id is None or int(page_id) < 0:
+            page_id = 1
+        
+        start = (int(page_id) - 1) * page_size
+        end = start + page_size
+
+        all_invests = uobj.investment_set.all()[start:end]
+        full_info = {}
+        invests_data = []
+
+        for invest in all_invests:
+            data = {}
+            data['estimate_yearly_return'] = get_yearly_return(invest.project)['yearly_return']
+            data['principal'] = invest.principal
+            data['interest'] = invest.interest
+            invests_data.append(data)
+        
+        full_info['investments'] = invests_data
+        return utils.return_success(full_info, total_count)
+    except Exception as e:
+        utils.logger.debug('get user investments info fail: %s', str(e))
+        return utils.return_error(400)

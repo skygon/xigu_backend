@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'corsheaders',
 # user defined apps
     'project.apps.ProjectConfig',
-    'user_manage.apps.UserManageConfig'
+    'user_manage.apps.UserManageConfig',
+    'investment.apps.InvestmentConfig',
 ]
 
 MIDDLEWARE = [

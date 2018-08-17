@@ -9,5 +9,6 @@ urlpatterns = [
     path('checkcode', response.check_verify_code),
     path('follow', response.follow),
     path('unfollow', response.unfollow),
-    path('like', response.get_user_info),
+    path('projects', response.get_user_projects_info),
+    path('investments', response.get_user_investments_info),
 ]
