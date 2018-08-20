@@ -26,7 +26,7 @@ def send(type, phone_num):
         __business_id = uuid.uuid1()
         params = {}
         params['code'] = code
-        smsutil.sms_to_cn(__business_id, phone_num, "房88", "SMS_101290035", json.dumps(params))
+        smsutil.sms_to_cn(__business_id, phone_num, "溪谷", "SMS_101290035", json.dumps(params))
     else:
         msg = 'verification code: %s. Valid for 5 minutes. [Fang88.com]' %(code)
         smsutil.sms_to_us(phone_num, msg)
