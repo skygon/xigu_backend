@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
 from xigu_utils import utils
+from user_manage.models import User
 
 def collect_project_info(p):
     data = {}
@@ -107,15 +108,28 @@ def get_list(request):
 
 def get_detail(request):
     try:
-        project_id = request.GET.get('id')
+        post_data = json.loads(request.body.decode('utf-8'))
+
+        project_id = post_data['id']
+        response = {}
+        response['follow'] = 0
+
+        if 'mobile' in pose_data:
+            phone_num = post_data['mobile']
+            uobj = User.objects.get(mobile=phone_num)
+            if uobj.follow_projects.filter(id=project_id).exists():
+                response['follow'] = 1
+
+
         p = Project.objects.get(id=project_id)
-        response = HttpResponse()
+        #response = HttpResponse()
    
         desc = p.project_detail.content
         new_content = desc.replace("src=\"/upload/upload/", "src=\"http://img.fang88.com/ng_server_upload/")
         
-        response.write(new_content)
-        return response
+        #response.write(new_content)
+        response['data'] = new_content
+        return utils.return_success(response)
 
     except Exception as e:
         utils.logger.debug('get project detail fail: %s', str(e))
