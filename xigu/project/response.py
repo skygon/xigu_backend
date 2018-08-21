@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from .models import Project, ProjectDescription
 import os
+import json
 import sys
 # set import sys path
 sys.path.append(os.path.join(os.path.dirname(__file__)))
@@ -114,7 +115,7 @@ def get_detail(request):
         response = {}
         response['follow'] = 0
 
-        if 'mobile' in pose_data:
+        if 'mobile' in post_data:
             phone_num = post_data['mobile']
             uobj = User.objects.get(mobile=phone_num)
             if uobj.follow_projects.filter(id=project_id).exists():
